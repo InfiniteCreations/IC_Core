@@ -9,6 +9,7 @@ namespace InfiniteCreations
 {
     class InfiniteCreations : IC_Core.IC_Core
     {
+
         static void Main(string[] args)
         {
             Console.Title = "InfiniteCreations";

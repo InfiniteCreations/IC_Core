@@ -43,9 +43,17 @@
   <ItemGroup>
     <Compile Include="IC_Core.cs" />
     <Compile Include="Master\IC_Master.cs" />
+    <Compile Include="Network\Packets\Player.cs" />
+    <Compile Include="Network\Packets\Primitives.cs" />
+    <Compile Include="Network\Packets\Server.cs" />
+    <Compile Include="Network\PlayerSocket.cs" />
+    <Compile Include="Network\SocketServer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Server\Configuration.cs" />
     <Compile Include="Server\IC_Server.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Game\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
