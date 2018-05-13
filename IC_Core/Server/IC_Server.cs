@@ -38,6 +38,11 @@ namespace IC_Core.Server
             this.guid = Guid.NewGuid();
         }
 
+        public void parse(dynamic a)
+        {
+
+        }
+
 
         public bool Start(Configuration config)
         {

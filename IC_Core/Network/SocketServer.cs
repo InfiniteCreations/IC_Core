@@ -6,9 +6,65 @@ using System.Threading.Tasks;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
+using Newtonsoft;
+using Newtonsoft.Json;
 
 namespace IC_Core.Network
 {
+    
+
+    public class SocketEvents
+    {
+
+        public class SocketMessage : IDisposable
+        {
+
+            public Guid guid;
+            public dynamic data;
+
+            public SocketMessage(Guid _guid, dynamic _data)
+            {
+                guid = _guid;
+                data = _data;
+            }
+
+            public void Dispose()
+            {
+                GC.SuppressFinalize(this);
+            }
+
+        }
+
+        public class SocketError : IDisposable
+        {
+
+            public int errorCode;
+            public string data;
+
+            public SocketError(int _errorCode, string _data)
+            {
+                errorCode = _errorCode;
+                data = _data;
+            }
+
+            public void Dispose()
+            {
+                GC.SuppressFinalize(this);
+            }
+
+
+        }
+
+
+    }
+
+    public class RootMessage
+    {
+
+        public string guid { get; set; }
+
+    }
+
     public class SocketServer
     {
 
@@ -28,6 +84,12 @@ namespace IC_Core.Network
         private readonly int _port;
 
         public State state { get; private set; } = State.IDLE;
+
+        public event EventHandler<SocketEvents.SocketMessage> message;
+        public event EventHandler<PlayerSocket> connect;
+        public event EventHandler<SocketEvents.SocketError> error;
+        public event EventHandler disconnect;
+
         private Thread thread;
 
         public SocketServer(int port)
@@ -48,11 +110,13 @@ namespace IC_Core.Network
             {
 
                 Socket client = socket.Accept();
-                acceptSocket(client);
+                acceptSocket(socket);
 
             }
 
         }
+
+       
 
         private void acceptSocket(Socket client)
         {
@@ -72,7 +136,26 @@ namespace IC_Core.Network
                     if (data.IndexOf("<EOF>") > -1) break;
                 }
 
-                // parse data
+
+
+                try
+                {
+
+                    // parse data
+
+                    var _data = JsonConvert.DeserializeObject<RootMessage>(data);
+
+                    if(_data.guid.Length == 32)
+                    {
+                        message(null, new SocketEvents.SocketMessage(Guid.Parse(_data.guid), _data));
+                    }
+
+                }
+                catch (Exception ex)
+                {
+
+                }
+
 
             }
         }
@@ -109,6 +192,8 @@ namespace IC_Core.Network
                     socket.Disconnect(true);
 
                 }
+
+                disconnect(null, null);
 
                 state = State.STOPPED;
                 

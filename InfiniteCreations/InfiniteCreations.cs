@@ -41,6 +41,22 @@ namespace InfiniteCreations
                         break;
                     case "servers": Console.WriteLine("Running servers : " + base.master.getServerCount());
                         break;
+                    case "stop":
+                        if(str.Length == 2)
+                        {
+                            switch(str[1].ToLower())
+                            {
+                                case "server":
+                                    base.master.server.stop();
+                                    break;
+                                case "servers":
+                                    break;
+                            }
+                        }else
+                        {
+                            Console.WriteLine("Stop what? [server | servers]");
+                        }
+                        break;
                     default: Console.WriteLine("try `help`");
                         break;
                 }
