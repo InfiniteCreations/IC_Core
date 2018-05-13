@@ -4,9 +4,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace IC_Core.Network.Packets
+namespace IC_Core.Interface.Network.Packets
 {
-    class Player : Interface.Network.Packets.Packet
+
+    public abstract class Packet
     {
+
+
     }
+
 }

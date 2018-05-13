@@ -25,6 +25,7 @@ namespace IC_Core.Network
         private readonly IPAddress _ipAddress;
         private readonly IPEndPoint _localEndPoint;
         private readonly object _lock = new object();
+        private readonly int _port;
 
         public State state { get; private set; } = State.IDLE;
         private Thread thread;
@@ -33,7 +34,7 @@ namespace IC_Core.Network
         {
             _ipAddress = _ipHostInfo.AddressList[0];
             _localEndPoint = new IPEndPoint(_ipAddress, 0);
-
+            _port = port;
             socket = new Socket(_ipAddress.AddressFamily, SocketType.Stream, ProtocolType.Tcp); // TCP?
 
             start();
@@ -41,6 +42,7 @@ namespace IC_Core.Network
 
         private void safeThread()
         {
+
 
             while(true)
             {
@@ -61,6 +63,7 @@ namespace IC_Core.Network
 
             lock(_lock)
             {
+
                 while(true)
                 {
 
@@ -82,6 +85,7 @@ namespace IC_Core.Network
                 {
 
                     socket.Bind(_localEndPoint);
+                    socket.Listen(_port);
 
                     thread = new Thread(new ThreadStart(safeThread));
                     thread.Start();
@@ -93,6 +97,21 @@ namespace IC_Core.Network
                 {
                     Console.WriteLine("[ERROR] " + e.Message.ToString());
                 }
+            }
+        }
+
+        public void stop()
+        {
+            if(state == State.RUNNING)
+            {
+                if(socket.Connected)
+                {
+                    socket.Disconnect(true);
+
+                }
+
+                state = State.STOPPED;
+                
             }
         }
 

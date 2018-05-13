@@ -42,6 +42,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="IC_Core.cs" />
+    <Compile Include="Interface\Network\Packets\Packet.cs" />
     <Compile Include="Master\IC_Master.cs" />
     <Compile Include="Network\Packets\Player.cs" />
     <Compile Include="Network\Packets\Primitives.cs" />

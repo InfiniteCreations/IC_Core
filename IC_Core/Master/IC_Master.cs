@@ -10,12 +10,14 @@ namespace IC_Core.Master
     public class IC_Master
     {
 
-        protected IC_Core core { get; private set; }
+        private IC_Core core;
+        private Network.SocketServer server { get; }
         private Dictionary<Guid, IC_Server> servers = new Dictionary<Guid, IC_Server>();
 
         public IC_Master(IC_Core core)
         {
             this.core = core;
+            this.server = new Network.SocketServer(443);
         }
 
         public Guid createServer(string name, Int64 owner)
