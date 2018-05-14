@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 using IC_Core.Master;
+using IC_Core.Server;
 
 namespace IC_Core.Server
 {
@@ -28,6 +29,7 @@ namespace IC_Core.Server
         public readonly string name;
         public readonly Int64 owner;
         public readonly Guid guid;
+        public readonly string namehash;
 
 
         public IC_Server(IC_Master master, string name, Int64 owner)
@@ -36,6 +38,7 @@ namespace IC_Core.Server
             this.name = name;
             this.owner = owner;
             this.guid = Guid.NewGuid();
+            this.namehash = String.Format("{0:X}", name.GetHashCode());
         }
 
         public void parse(dynamic a)
@@ -43,6 +46,10 @@ namespace IC_Core.Server
 
         }
 
+        public void registerBehavior(Network.Behaviors.Server behavior)
+        {
+
+        }
 
         public bool Start(Configuration config)
         {

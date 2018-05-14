@@ -9,62 +9,12 @@ using System.Threading;
 using Newtonsoft;
 using Newtonsoft.Json;
 
+using WebSocketSharp;
+using WebSocketSharp.Server;
+
 namespace IC_Core.Network
 {
     
-
-    public class SocketEvents
-    {
-
-        public class SocketMessage : IDisposable
-        {
-
-            public Guid guid;
-            public dynamic data;
-
-            public SocketMessage(Guid _guid, dynamic _data)
-            {
-                guid = _guid;
-                data = _data;
-            }
-
-            public void Dispose()
-            {
-                GC.SuppressFinalize(this);
-            }
-
-        }
-
-        public class SocketError : IDisposable
-        {
-
-            public int errorCode;
-            public string data;
-
-            public SocketError(int _errorCode, string _data)
-            {
-                errorCode = _errorCode;
-                data = _data;
-            }
-
-            public void Dispose()
-            {
-                GC.SuppressFinalize(this);
-            }
-
-
-        }
-
-
-    }
-
-    public class RootMessage
-    {
-
-        public string guid { get; set; }
-
-    }
-
     public class SocketServer
     {
 
@@ -75,128 +25,75 @@ namespace IC_Core.Network
             RUNNING = 1,
         }
 
-        private Socket socket;
         private readonly byte[] _bytes = new Byte[1024];
-        private readonly IPHostEntry _ipHostInfo = Dns.GetHostEntry(Dns.GetHostName());
-        private readonly IPAddress _ipAddress;
-        private readonly IPEndPoint _localEndPoint;
         private readonly object _lock = new object();
         private readonly int _port;
 
+        private WebSocketServer WSS;
+
         public State state { get; private set; } = State.IDLE;
 
-        public event EventHandler<SocketEvents.SocketMessage> message;
-        public event EventHandler<PlayerSocket> connect;
-        public event EventHandler<SocketEvents.SocketError> error;
-        public event EventHandler disconnect;
 
-        private Thread thread;
 
         public SocketServer(int port)
         {
-            _ipAddress = _ipHostInfo.AddressList[0];
-            _localEndPoint = new IPEndPoint(_ipAddress, 0);
+
             _port = port;
-            socket = new Socket(_ipAddress.AddressFamily, SocketType.Stream, ProtocolType.Tcp); // TCP?
 
-            start();
-        }
-
-        private void safeThread()
-        {
-
-
-            while(true)
+            try
             {
-
-                Socket client = socket.Accept();
-                acceptSocket(socket);
-
+                WSS = new WebSocketServer(port, false);
+            }catch(Exception ex)
+            {
+                Console.WriteLine("[ERROR] " + ex.Message);
             }
 
+            /* Future use of SSL
+             * 
+            WSS.SslConfiguration.EnabledSslProtocols = System.Security.Authentication.SslProtocols.Ssl2;
+            WSS.SslConfiguration.ClientCertificateRequired = true;
+            WSS.SslConfiguration.CheckCertificateRevocation = true;
+            WSS.SslConfiguration.ServerCertificate = new System.Security.Cryptography.X509Certificates.X509Certificate2();
+            */
         }
 
-       
 
-        private void acceptSocket(Socket client)
-        {
-
-            string data = string.Empty;
-            byte[] bytes = _bytes.ToArray();
-
-
-            lock(_lock)
-            {
-
-                while(true)
-                {
-
-                    int byteLength = client.Receive(bytes);
-                    data += Encoding.ASCII.GetString(bytes, 0, byteLength);
-                    if (data.IndexOf("<EOF>") > -1) break;
-                }
-
-
-
-                try
-                {
-
-                    // parse data
-
-                    var _data = JsonConvert.DeserializeObject<RootMessage>(data);
-
-                    if(_data.guid.Length == 32)
-                    {
-                        message(null, new SocketEvents.SocketMessage(Guid.Parse(_data.guid), _data));
-                    }
-
-                }
-                catch (Exception ex)
-                {
-
-                }
-
-
-            }
-        }
-
-        public void start()
+        public void Start()
         {
             if(state != State.RUNNING)
             {
                 try
                 {
-
-                    socket.Bind(_localEndPoint);
-                    socket.Listen(_port);
-
-                    thread = new Thread(new ThreadStart(safeThread));
-                    thread.Start();
-
-                    Console.WriteLine("[INFO] Socket Server Started");
-
+                    WSS.Start();
+                    state = State.RUNNING;
                 }
                 catch (Exception e)
                 {
                     Console.WriteLine("[ERROR] " + e.Message.ToString());
                 }
+
+                Console.WriteLine("[INFO] Socket Server Started");
             }
         }
 
-        public void stop()
+        public void AddWebSocketService<TBehavior>(string path, Func<TBehavior> initializer)  where TBehavior : WebSocketBehavior
+        {
+            WSS.AddWebSocketService<TBehavior>(path, initializer);
+        }
+
+        public void Stop(ushort code, string reason)
         {
             if(state == State.RUNNING)
             {
-                if(socket.Connected)
-                {
-                    socket.Disconnect(true);
 
+                if(WSS.IsListening)
+                {
+                    WSS.Stop(code, reason);
                 }
 
-                disconnect(null, null);
-
                 state = State.STOPPED;
-                
+                Console.WriteLine("[INFO] Socket Server Stopped");
+
             }
         }
 

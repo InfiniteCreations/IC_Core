@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace IC_Core.Network.Packets
 {
-    class Primitives
+    class Primitives : Interface.Network.Packets.Packet
     {
     }
 }

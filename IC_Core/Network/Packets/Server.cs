@@ -6,7 +6,10 @@ using System.Threading.Tasks;
 
 namespace IC_Core.Network.Packets
 {
-    class Server
+    public class Server : Interface.Network.Packets.Packet
     {
+
+        public Guid guid { get; set; } = Guid.Empty;
+
     }
 }

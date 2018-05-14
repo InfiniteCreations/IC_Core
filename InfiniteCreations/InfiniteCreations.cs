@@ -47,9 +47,12 @@ namespace InfiniteCreations
                             switch(str[1].ToLower())
                             {
                                 case "server":
-                                    base.master.server.stop();
+                                    base.master.server.Stop(0, "closed server connection");
                                     break;
                                 case "servers":
+                                    break;
+                                case "master":
+                                    base.master.Stop();
                                     break;
                             }
                         }else
