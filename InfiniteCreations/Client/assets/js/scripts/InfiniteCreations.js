@@ -3,6 +3,32 @@
     return class InfiniteCreations {
 
         constructor() {
+            this.camera;
+            this.scene;
+            this.renderer;
+            this.socket = new WebSocket('ws://localhost:443');
+
+            this.socket.onmessage = function (e) {
+
+                console.log(e);
+                console.warn("message => " + e.data)
+            }
+            this.socket.onclose = function () {
+                alert("Lost connection to server");
+                console.log("Socket closed");
+            }.bind(this);
+            this.socket.onopen = function () {
+                console.log("Socket opened");
+                this.socket.send("Hey");
+                this.run();
+            }.bind(this);
+            this.socket.onerror = function (e) {
+                alert("Failed to connect to server");
+                console.error(e)
+            }
+        }
+
+        run() {
             this.camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1e3);
             this.scene = new THREE.Scene();
             this.renderer = new THREE.WebGLRenderer();

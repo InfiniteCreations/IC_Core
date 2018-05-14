@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using IC_Core.Server;
 using IC_Core.Network;
+using WebSocketSharp.Server;
 
 namespace IC_Core.Master
 {
@@ -14,7 +15,7 @@ namespace IC_Core.Master
         private IC_Core core;
         private Dictionary<Guid, IC_Server> servers = new Dictionary<Guid, IC_Server>();
 
-        private Network.Behaviors.Master masterSocket;
+        List<IWebSocketSession> clients = new List<IWebSocketSession>();
 
         public IC_Master(IC_Core core)
         {
@@ -22,14 +23,7 @@ namespace IC_Core.Master
             this.core = core;
             this.server = new Network.SocketServer(443);
 
-            masterSocket = new Network.Behaviors.Master();
-
-            masterSocket.close += MasterSocket_close;
-            masterSocket.error += MasterSocket_error;
-            masterSocket.message += MasterSocket_message;
-            masterSocket.open += MasterSocket_open;
-
-            server.AddWebSocketService<Network.Behaviors.Master>("/", () => masterSocket);
+            server.AddWebSocketService<Network.Behaviors.Master>("/", () => new Network.Behaviors.Master(MasterSocket_message, MasterSocket_open, MasterSocket_close, MasterSocket_error));
 
             Start();
 
@@ -37,24 +31,27 @@ namespace IC_Core.Master
 
         }
 
-        private void MasterSocket_open(object sender, WebSocketSharp.Server.IWebSocketSession e)
+        private void MasterSocket_open(Object sender, WebSocketSharp.Server.IWebSocketSession e)
         {
-            throw new NotImplementedException();
+            clients.Add(e);
+            Console.WriteLine("Socket connected " + e.ID);
         }
 
-        private void MasterSocket_message(object sender, WebSocketSharp.MessageEventArgs e)
+        private void MasterSocket_message(Object sender, WebSocketSharp.MessageEventArgs e)
         {
-            throw new NotImplementedException();
+            Console.WriteLine("Socket message " + e.Data);
         }
 
-        private void MasterSocket_error(object sender, WebSocketSharp.ErrorEventArgs e)
+        private void MasterSocket_error(Object sender, WebSocketSharp.ErrorEventArgs e)
         {
-            throw new NotImplementedException();
+            Console.WriteLine("Socket error " + e.Message);
         }
 
-        private void MasterSocket_close(object sender, WebSocketSharp.CloseEventArgs e)
+        private void MasterSocket_close(Object sender, WebSocketSharp.CloseEventArgs e)
         {
-            throw new NotImplementedException();
+            int i = clients.FindIndex(x => x.ID == (string) sender);
+            if(i > -1) clients.RemoveAt(i);
+            Console.WriteLine( i + " Socket closed " + e.Code + " : " + sender);
         }
 
         public Guid createServer(string name, Int64 owner)
@@ -62,12 +59,10 @@ namespace IC_Core.Master
             IC_Server server = new IC_Server(this, name, owner);
 
             // bind socket behavior
-            Network.Behaviors.Server behavior = new Network.Behaviors.Server();
-            server.registerBehavior(behavior);
             servers.Add(server.guid, server);
 
             // register protocol on socket
-            this.server.AddWebSocketService<Network.Behaviors.Server>("/" + server.namehash, () => behavior);
+            this.server.AddWebSocketService<Network.Behaviors.Server>("/" + server.namehash, () => new Network.Behaviors.Server(server));
 
             Console.WriteLine("[INFO] Server created " + server.namehash);
             return server.guid;

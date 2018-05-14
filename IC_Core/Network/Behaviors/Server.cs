@@ -1,4 +1,5 @@
-﻿using System;
+﻿using IC_Core.Server;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -12,26 +13,25 @@ namespace IC_Core.Network.Behaviors
     public class Server : WebSocketBehavior
     {
 
-        public event EventHandler<CloseEventArgs> close;
-        public event EventHandler<MessageEventArgs> message;
-        public event EventHandler<ErrorEventArgs> error;
-        public event EventHandler<IWebSocketSession> open;
+        public Server(IC_Server server)
+        {
+
+        }
 
         protected override void OnClose(CloseEventArgs e)
         {
-            close(this, e);
+     
             base.OnClose(e);
         }
 
         protected override void OnError(ErrorEventArgs e)
         {
-            error(this, e);
+
             base.OnError(e);
         }
 
         protected override void OnMessage(MessageEventArgs e)
         {
-            message(this, e);
             base.OnMessage(e);
         }
 
@@ -40,7 +40,7 @@ namespace IC_Core.Network.Behaviors
             base.OnOpen();
             if (Sessions[ID] != null)
             {
-                open(this, Sessions[ID]);
+
             }
         }
 

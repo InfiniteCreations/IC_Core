@@ -187,7 +187,7 @@ namespace InfiniteCreations
                     Stream input;
                     string[] f = filename.Split('\\');
                     string name = f[f.Count() - 1];
-                    Console.WriteLine(name);
+                    // Console.WriteLine(name);
                     if (name == "index.html")
                     {
                         input = new MemoryStream(Encoding.ASCII.GetBytes(File.ReadAllText(filename).Replace("{{cache}}", nf(d).ToString())));

@@ -48,6 +48,7 @@ namespace IC_Core.Network
                 Console.WriteLine("[ERROR] " + ex.Message);
             }
 
+
             /* Future use of SSL
              * 
             WSS.SslConfiguration.EnabledSslProtocols = System.Security.Authentication.SslProtocols.Ssl2;
