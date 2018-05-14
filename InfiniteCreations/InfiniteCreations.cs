@@ -4,14 +4,19 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using IC_Core;
+using System.IO;
+using System.Runtime.InteropServices;
 
 namespace InfiniteCreations
 {
     class InfiniteCreations : IC_Core.IC_Core
     {
 
+        private HTTPServer httpServer;
+
         static void Main(string[] args)
         {
+
             Console.Title = "InfiniteCreations";
 
             // preparations
@@ -21,8 +26,23 @@ namespace InfiniteCreations
 
         public InfiniteCreations() : base()
         {
-
+            handler = new ConsoleEventDelegate(ConsoleEventCallback);
+            SetConsoleCtrlHandler(handler, true);
             base.output += (s, e) => Console.WriteLine(e);
+            string path = Path.GetFullPath(Path.Combine(Path.GetFullPath(Path.Combine(Environment.CurrentDirectory, @"..\..\")), @"Client"));
+
+            try
+            {
+                httpServer = new HTTPServer(path, 8080); // web port 8080
+
+                Console.WriteLine("Debug webserver started on port 8080");
+
+            }catch(Exception ex)
+            {
+                Console.WriteLine("Failed to start webserver " + ex.Message);
+                Console.ReadLine();
+                Environment.Exit(0);
+            }
 
             while (true)
             {
@@ -30,6 +50,22 @@ namespace InfiniteCreations
             }
 
         }
+
+        private bool ConsoleEventCallback(int eventType)
+        {
+            if (eventType == 2)
+            {
+                Console.WriteLine("Stopping server...");
+                httpServer.Stop();
+                this.master.Stop();
+            }
+            return false;
+        }
+        static ConsoleEventDelegate handler;   // Keeps it from getting garbage collected
+                                               // Pinvoke
+        private delegate bool ConsoleEventDelegate(int eventType);
+        [DllImport("kernel32.dll", SetLastError = true)]
+        private static extern bool SetConsoleCtrlHandler(ConsoleEventDelegate callback, bool add);
 
         private void cmd(string[] str)
         {
@@ -47,12 +83,10 @@ namespace InfiniteCreations
                             switch(str[1].ToLower())
                             {
                                 case "server":
-                                    base.master.server.Stop(0, "closed server connection");
+                                    base.master.Stop();
                                     break;
                                 case "servers":
-                                    break;
-                                case "master":
-                                    base.master.Stop();
+                                    this.master.stopServers();
                                     break;
                             }
                         }else
