@@ -7,8 +7,6 @@
         }
 
         createEntity(name, entity, components, scripts) {
-            if(Object.hasOwnProperty(this.entites, name)) 
-                throw new Error("Cannot create entities with the same name");
             var entity = new this.pc.Entity(entity);
             entity.name = name;
             if (components instanceof Object) {
@@ -24,6 +22,7 @@
             }
             return entity;
         }
+
 
     }
 

@@ -25,9 +25,7 @@
             this.entityManager = new EntityManager(pc);
 
             // register scripts
-            if (this.scriptManager.loadScripts(['Camera', 'Controller', 'FlyCamera'])) {
-
-                // create objects d
+            if (this.scriptManager.loadScripts(['Camera'])) {
                 this.objects = this.registerObjects();
             }
 
@@ -77,7 +75,7 @@
                     halfExtents: new pc.Vec3(this.map.size.x / 2, this.map.size.z / 2, this.map.size.y / 2)
                 }
             });
-            _.camera = this.entityManager.createEntity('debugcamera', 'camera', { script: null }, { camera: { attributes: {} }});
+            _.camera = this.entityManager.createEntity('debugcamera', 'camera', {}, { camera: { attributes: {} }});
             _.light = this.entityManager.createEntity('light', 'light', { light: null });
 
             // apply object properties
