@@ -1,4 +1,4 @@
-﻿define(['pc', 'Core/ScriptManager'], function (pc, ScriptManager) {
+﻿define(['pc', 'Core/ScriptManager', 'Core/EntityManager'], function (pc, ScriptManager, EntityManager) {
 
     return class InfiniteCreations {
 
@@ -16,12 +16,13 @@
             this.renderer.on('update', this.update.bind(this));
 
             this.map = {
-                size: {x: 500, y: 500, z: 0}
+                size: {x: 1000, y: 1000, z: 0}
             }
 
             this.resize();
 
             this.scriptManager = new ScriptManager(pc);
+            this.entityManager = new EntityManager(pc);
 
             // register scripts
             if (this.scriptManager.loadScripts(['Camera', 'Controller', 'FlyCamera'])) {
@@ -66,34 +67,65 @@
         }
 
         registerObjects(_) {
-            // add game objects
-            _ = {};
+            _ = {}
 
-            _.floor = new pc.Entity('plane');
-            _.floor.addComponent('model', { type: 'plane' })
-            _.floor.addComponent('collision', {
-                type: 'box',
-                halfExtents: new pc.Vec3(this.map.size.x + 0.1, this.map.size.z + 0.1, this.map.size.y + 0.1)
-            })
-
-            console.log(_.floor)
-
-            _.floor.setEulerAngles(90, 0, 0)
-            _.floor.setLocalScale(this.map.size.x, this.map.size.z, this.map.size.y)
-            _.floor.setPosition(0, 0, 0);
-
-            _.camera = new pc.Entity('camera');
-            _.light = new pc.Entity('light');
+            // create game objects
+            _.floor = this.entityManager.createEntity('ground', 'plane', {
+                model: { type: 'plane' },
+                collision: {
+                    type: 'box',
+                    halfExtents: new pc.Vec3(this.map.size.x / 2, this.map.size.z / 2, this.map.size.y / 2)
+                }
+            });
+            _.camera = this.entityManager.createEntity('debugcamera', 'camera', { script: null }, { camera: { attributes: {} }});
+            _.light = this.entityManager.createEntity('light', 'light', { light: null });
 
             // apply object properties
-
-
-            _.camera.addComponent('script');
-            _.camera.script.create('camera', { attributes: {} });
-
-
-            _.light.addComponent('light');
+            _.floor.setPosition(0, 0, 0);
+            _.floor.setEulerAngles(0, 0, 0)
+            _.floor.setLocalScale(this.map.size.x, this.map.size.z, this.map.size.y)
             _.light.setEulerAngles(45, 0, 0);
+
+            window.floor = _.floor;
+
+
+            // setup a skybox environment
+
+            var textures = [
+                    'public/cubemaps/yokohama/posx.jpg',
+                    'public/cubemaps/yokohama/negx.jpg',
+                    'public/cubemaps/yokohama/posy.jpg',
+                    'public/cubemaps/yokohama/negy.jpg',
+                    'public/cubemaps/yokohama/posz.jpg',
+                    'public/cubemaps/yokohama/negz.jpg',
+            ]
+
+
+            var textures = textures.map(t => {
+                var asset = new pc.Asset(t, 'texture',
+                  { url: t },
+                  { addressu: 'repeat', addressv: 'repeat' }
+                );
+
+                this.renderer.assets.add(asset);
+                this.renderer.assets.load(asset);
+                return asset.id;
+            });
+
+
+            var cubemap = new pc.Asset('skybox', 'cubemap',
+                null,
+                {
+                    anisotropy: 1,
+                    magFilter: 1,
+                    minFilter: 5,
+                    rgbm: false,
+                    textures: textures
+                }
+            );
+
+
+            this.renderer.setSkybox(cubemap)
 
             // add all objects to scene and return objects
             for (var i in _) {
@@ -106,7 +138,6 @@
         run() {
             this.resize();
             this.renderer.start();
-            this.update();
         }
 
         registerListeners() {
