@@ -4,6 +4,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InfiniteCreations", "InfiniteCreations\InfiniteCreations.csproj", "{B0E7DF34-5EA1-4928-B1CD-79D7CE28B4BF}"
+	ProjectSection(ProjectDependencies) = postProject
+		{917715B7-2216-417B-87B1-646E022F26EB} = {917715B7-2216-417B-87B1-646E022F26EB}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IC_Core", "IC_Core\IC_Core.csproj", "{917715B7-2216-417B-87B1-646E022F26EB}"
 EndProject
