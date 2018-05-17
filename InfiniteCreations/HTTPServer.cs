@@ -134,7 +134,7 @@ namespace InfiniteCreations
         private void Listen()
         {
             _listener = new HttpListener();
-            _listener.Prefixes.Add("http://localhost:" + _port.ToString() + "/");
+            _listener.Prefixes.Add("http://*:" + _port.ToString() + "/");
             _listener.Start();
             while (true)
             {

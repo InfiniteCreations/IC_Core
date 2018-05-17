@@ -56,11 +56,22 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <None Include="Client\public\amimations\idle\idle.json" />
+    <None Include="Client\public\amimations\idle\idle.mapping.json" />
+    <None Include="Client\public\amimations\jog\jog.json" />
+    <None Include="Client\public\amimations\jog\jog.mapping.json" />
+    <None Include="Client\public\amimations\running\running.json" />
+    <None Include="Client\public\amimations\running\running.mapping.json" />
+    <None Include="Client\public\models\player\player.json" />
+    <None Include="Client\public\models\player\player.mapping.json" />
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Client\public\models\player\12486472\" />
+  </ItemGroup>
   <ItemGroup>
     <Content Include="Client\assets\js\app.js" />
+    <Content Include="Client\core\EntityManager.js" />
     <Content Include="Client\core\EventManager.js" />
     <Content Include="Client\core\ScriptManager.js" />
     <Content Include="Client\core\scripts\Camera.js" />
@@ -76,6 +87,12 @@
     <Content Include="Client\index.html">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="Client\public\cubemaps\yokohama\negx.jpg" />
+    <Content Include="Client\public\cubemaps\yokohama\negy.jpg" />
+    <Content Include="Client\public\cubemaps\yokohama\negz.jpg" />
+    <Content Include="Client\public\cubemaps\yokohama\posx.jpg" />
+    <Content Include="Client\public\cubemaps\yokohama\posy.jpg" />
+    <Content Include="Client\public\cubemaps\yokohama\posz.jpg" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

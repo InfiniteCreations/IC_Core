@@ -34,7 +34,6 @@ namespace InfiniteCreations
             try
             {
                 httpServer = new HTTPServer(path, 8080); // web port 8080
-
                 Console.WriteLine("Debug webserver started on port 8080");
 
             }catch(Exception ex)

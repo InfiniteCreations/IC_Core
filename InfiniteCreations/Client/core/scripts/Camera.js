@@ -4,10 +4,10 @@ Camera.prototype.initialize = function () {
     this.entity.addComponent('camera', {
         clearColor: new pc.Color(0.1, 0.1, 0.1)
     })
-    this.entity.setPosition(0, 50, 0);
+    this.entity.setPosition(0, 1, -5);
 
     this.rotationSpeed = 0.5;
-    this.cameraSpeed = 0.2;
+    this.cameraSpeed = 0.01;
 
     let eulers = this.entity.getLocalEulerAngles();
 

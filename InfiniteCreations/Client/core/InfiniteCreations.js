@@ -37,7 +37,7 @@
 
             // start socket
             this.sockets = [];
-            this.socket = new WebSocket("ws://localhost:443");
+            this.socket = new WebSocket("ws://host.legitsoulja.info:443");
 
             this.socket.onmessage = this.onMessage.bind(this);
             this.socket.onclose = this.onClose.bind(this);
@@ -68,6 +68,9 @@
             _ = {}
 
             // create game objects
+
+            _.player = this.entityManager.createEntity('player', null, { model: { type: 'asset' }});
+
             _.floor = this.entityManager.createEntity('ground', 'plane', {
                 model: { type: 'plane' },
                 collision: {
@@ -79,17 +82,40 @@
             _.light = this.entityManager.createEntity('light', 'light', { light: null });
 
             // apply object properties
+            _.light.setPosition(0, 50, 0);
             _.floor.setPosition(0, 0, 0);
             _.floor.setEulerAngles(0, 0, 0)
             _.floor.setLocalScale(this.map.size.x, this.map.size.z, this.map.size.y)
             _.light.setEulerAngles(45, 0, 0);
+            _.player.setPosition(0, 0, 0)
 
-            window.floor = _.floor;
+
+            // load player object/textures
+            var textures = [
+                'public/models/player/player.json',
+                'public/models/player/mat/mat1.json'
+            ]
+
+            this.renderer.assets.loadFromUrl('public/models/player/player.json', 'model', function (error, asset) {
+                if (error) {
+                    alert("Failed to load " + t);
+                    return;
+                }
+                this.renderer.assets.add(asset);
+                this.renderer.assets.load(asset);
+
+                _.player.model.asset = asset;
+                _.player.setLocalScale(3, 3, 3);
+
+
+
+            }.bind(this))
+
 
 
             // setup a skybox environment
 
-            var textures = [
+            textures = [
                     'public/cubemaps/yokohama/posx.jpg',
                     'public/cubemaps/yokohama/negx.jpg',
                     'public/cubemaps/yokohama/posy.jpg',
