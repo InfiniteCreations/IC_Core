@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using IC_Core;
 using System.IO;
 using System.Runtime.InteropServices;
+using System.Security.Principal;
 
 namespace InfiniteCreations
 {
@@ -14,10 +15,24 @@ namespace InfiniteCreations
 
         private HTTPServer httpServer;
 
+        static bool isAdministrator()
+        {
+            WindowsIdentity identity = WindowsIdentity.GetCurrent();
+            WindowsPrincipal principal = new WindowsPrincipal(identity);
+            return principal.IsInRole(WindowsBuiltInRole.Administrator);
+        }
+
         static void Main(string[] args)
         {
 
             Console.Title = "InfiniteCreations";
+
+            if(!isAdministrator())
+            {
+                Console.WriteLine("You must be an administrator to run this program");
+                Console.ReadLine();
+                Environment.Exit(0);
+            }
 
             // preparations
 
@@ -55,8 +70,8 @@ namespace InfiniteCreations
             if (eventType == 2)
             {
                 Console.WriteLine("Stopping server...");
+                base.master.Stop();
                 httpServer.Stop();
-                this.master.Stop();
             }
             return false;
         }
@@ -81,6 +96,10 @@ namespace InfiniteCreations
                         {
                             switch(str[1].ToLower())
                             {
+                                case "all":
+                                    base.master.Stop();
+                                    httpServer.Stop();
+                                    break;
                                 case "server":
                                     base.master.Stop();
                                     break;
