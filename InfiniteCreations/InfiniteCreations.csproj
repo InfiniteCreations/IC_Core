@@ -61,11 +61,18 @@
   <ItemGroup />
   <ItemGroup>
     <Content Include="Client\assets\js\app.js" />
+    <Content Include="Client\core\EventManager.js" />
+    <Content Include="Client\core\ScriptManager.js" />
+    <Content Include="Client\core\scripts\Camera.js" />
+    <Content Include="Client\core\scripts\Controller.js" />
+    <Content Include="Client\assets\js\playcanvas-stable.js" />
+    <Content Include="Client\assets\js\playcanvas-stable.min.js" />
     <Content Include="Client\assets\js\require.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Client\assets\js\scripts\InfiniteCreations.js" />
-    <Content Include="Client\assets\js\three.min.js" />
+    <Content Include="Client\core\InfiniteCreations.js" />
+    <Content Include="Client\core\scripts\FirstPersonCamera.js" />
+    <Content Include="Client\core\scripts\FlyCamera.js" />
     <Content Include="Client\index.html">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

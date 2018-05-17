@@ -1,13 +1,14 @@
 ﻿requirejs({
     baseUrl: '',
     paths: {
-        scripts: 'assets/js/scripts',
-        THREE: 'assets/js/three.min'
+        Core: 'core',
+        _pc: 'assets/js/playcanvas-stable.min',
+        pc: 'assets/js/playcanvas-stable'
     }
 })
 
 
-requirejs(['scripts/InfiniteCreations'], function (InfiniteCreations) {
-
+requirejs(['Core/InfiniteCreations'], function (InfiniteCreations) {
     new InfiniteCreations();
+
 })
