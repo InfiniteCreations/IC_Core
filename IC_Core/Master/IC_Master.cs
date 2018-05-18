@@ -23,7 +23,9 @@ namespace IC_Core.Master
             this.core = core;
             this.server = new Network.SocketServer(443);
 
-            server.AddWebSocketService<Network.Behaviors.Master>("/", () => new Network.Behaviors.Master(MasterSocket_message, MasterSocket_open, MasterSocket_close, MasterSocket_error));
+            server.AddWebSocketService<Network.Behaviors.Master>("/", () => new Network.Behaviors.Master(MasterSocket_message, MasterSocket_open, MasterSocket_close, MasterSocket_error) {
+                IgnoreExtensions = true
+            });
 
             Start();
 
@@ -34,24 +36,24 @@ namespace IC_Core.Master
         private void MasterSocket_open(Object sender, WebSocketSharp.Server.IWebSocketSession e)
         {
             clients.Add(e);
-            Console.WriteLine("Socket connected " + e.ID);
+            Console.WriteLine("[ " + server.SessionCount("/") +"]Socket connected :" + e.ID);
         }
 
         private void MasterSocket_message(Object sender, WebSocketSharp.MessageEventArgs e)
         {
-            Console.WriteLine("Socket message " + e.Data);
+            Console.WriteLine("Socket message :" + e.Data);
         }
 
         private void MasterSocket_error(Object sender, WebSocketSharp.ErrorEventArgs e)
         {
-            Console.WriteLine("Socket error " + e.Message);
+            Console.WriteLine("Socket error :" + e.Message);
         }
 
         private void MasterSocket_close(Object sender, WebSocketSharp.CloseEventArgs e)
         {
             int i = clients.FindIndex(x => x.ID == (string) sender);
             if(i > -1) clients.RemoveAt(i);
-            Console.WriteLine( i + " Socket closed " + e.Code + " : " + sender);
+            Console.WriteLine(" Socket closed : " + sender);
         }
 
         public Guid createServer(string name, Int64 owner)
@@ -80,8 +82,9 @@ namespace IC_Core.Master
 
         public void Start()
         {
-            this.server.Start();
-
+            if (this.server.state != SocketServer.State.RUNNING) {
+                this.server.Start();
+            }
         }
 
         public void Stop()

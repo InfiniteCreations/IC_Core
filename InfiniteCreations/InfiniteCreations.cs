@@ -48,7 +48,7 @@ namespace InfiniteCreations
 
             try
             {
-                httpServer = new HTTPServer(path, 8080); // web port 8080
+                httpServer = new HTTPServer(path, 5050); // web port 8080
                 Console.WriteLine("Debug webserver started on port 8080");
 
             }catch(Exception ex)
@@ -87,9 +87,22 @@ namespace InfiniteCreations
             {
                 switch(str[0].ToLower())
                 {
+                    case "quit":
+                    case "exit":
+                    case "abort":
+                        base.master.Stop();
+                        httpServer.Stop();
+                        Console.WriteLine("Services stopped. Press ENTER to exit");
+                        Console.ReadLine();
+                        Environment.Exit(0);
+                        break;
                     case "help": Console.WriteLine("InfiniteCreations");
                         break;
                     case "servers": Console.WriteLine("Running servers : " + base.master.getServerCount());
+                        break;
+                    case "start":
+                        httpServer.Start();
+                        this.master.Start();
                         break;
                     case "stop":
                         if(str.Length == 2)

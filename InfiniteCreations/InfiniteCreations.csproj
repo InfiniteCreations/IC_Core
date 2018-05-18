@@ -97,16 +97,15 @@
   <ItemGroup>
     <None Include="App.config" />
     <None Include="app.manifest" />
-    <None Include="Client\public\amimations\idle\idle.json" />
-    <None Include="Client\public\amimations\idle\idle.mapping.json" />
-    <None Include="Client\public\amimations\jog\jog.json" />
-    <None Include="Client\public\amimations\jog\jog.mapping.json" />
-    <None Include="Client\public\amimations\running\running.json" />
-    <None Include="Client\public\amimations\running\running.mapping.json" />
+    <None Include="Client\public\animations\idle\idle.json" />
+    <None Include="Client\public\animations\jog\jog.json" />
+    <None Include="Client\public\animations\running\running.json" />
     <None Include="Client\public\models\player\player.json" />
     <None Include="Client\public\models\player\player.mapping.json" />
     <None Include="InfiniteCreations_TemporaryKey.pfx" />
-    <None Include="packages.config" />
+    <None Include="packages.config">
+      <SubType>Designer</SubType>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Client\public\models\player\12486472\" />

@@ -26,6 +26,25 @@ namespace IC_Core.Network.Behaviors
             _message = message;
             _error = error;
             _open = open;
+
+
+            OriginValidator = (val) =>
+            {
+                Uri origin;
+
+                if (!val.IsNullOrEmpty()) {
+                    Uri.TryCreate(val, UriKind.Absolute, out origin);
+                    if(origin.Host == "host.legitsoulja.info")
+                    {
+                        return true;
+                    }
+
+
+                    Console.WriteLine(ID + ". Unknown origin connected to socket > " + origin.AbsoluteUri);
+                }
+
+                return false;
+            };
         }
 
         protected override void OnClose(CloseEventArgs e)

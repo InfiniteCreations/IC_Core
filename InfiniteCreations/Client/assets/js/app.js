@@ -2,8 +2,8 @@
     baseUrl: '',
     paths: {
         Core: 'core',
-        _pc: 'assets/js/playcanvas-stable.min',
-        pc: 'assets/js/playcanvas-stable'
+        pc: 'assets/js/playcanvas-stable.min',
+        _pc: 'assets/js/playcanvas-stable'
     }
 })
 

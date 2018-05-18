@@ -90,13 +90,10 @@ namespace InfiniteCreations
         private Thread _serverThread;
         private string _rootDirectory;
         private HttpListener _listener;
-        private int _port;
 
-        public int Port
-        {
-            get { return _port; }
-            private set { }
-        }
+        public string path;
+
+        public int port { get; set; }
 
         /// <summary>
         /// Construct server with given port.
@@ -105,6 +102,8 @@ namespace InfiniteCreations
         /// <param name="port">Port of the server.</param>
         public HTTPServer(string path, int port)
         {
+            this.path = path;
+            this.port = port;
             this.Initialize(path, port);
         }
 
@@ -115,9 +114,10 @@ namespace InfiniteCreations
         public HTTPServer(string path)
         {
             //get an empty port
+
             TcpListener l = new TcpListener(IPAddress.Loopback, 0);
             l.Start();
-            int port = ((IPEndPoint)l.LocalEndpoint).Port;
+            this.port = ((IPEndPoint)l.LocalEndpoint).Port;
             l.Stop();
             this.Initialize(path, port);
         }
@@ -125,8 +125,17 @@ namespace InfiniteCreations
         /// <summary>
         /// Stop server and dispose all functions.
         /// </summary>
+        /// 
+
+        public void Start()
+        {
+            if (_listener.IsListening) return;
+            this.Initialize(this._rootDirectory, port);
+        }
+
         public void Stop()
         {
+            if (!_listener.IsListening) return;
             _serverThread.Abort();
             _listener.Stop();
         }
@@ -134,7 +143,7 @@ namespace InfiniteCreations
         private void Listen()
         {
             _listener = new HttpListener();
-            _listener.Prefixes.Add("http://*:" + _port.ToString() + "/");
+            _listener.Prefixes.Add("http://*:" + port.ToString() + "/");
             _listener.Start();
             while (true)
             {
@@ -229,7 +238,6 @@ namespace InfiniteCreations
         private void Initialize(string path, int port)
         {
             this._rootDirectory = path;
-            this._port = port;
             _serverThread = new Thread(this.Listen);
             _serverThread.Start();
         }

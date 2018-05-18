@@ -1,4 +1,4 @@
-﻿define(['pc', 'Core/ScriptManager', 'Core/EntityManager'], function (pc, ScriptManager, EntityManager) {
+﻿define(['_pc', 'Core/ScriptManager', 'Core/EntityManager'], function (pc, ScriptManager, EntityManager) {
 
     return class InfiniteCreations {
 
@@ -18,6 +18,7 @@
             this.map = {
                 size: {x: 1000, y: 1000, z: 0}
             }
+
 
             this.resize();
 
@@ -69,7 +70,19 @@
 
             // create game objects
 
-            _.player = this.entityManager.createEntity('player', null, { model: { type: 'asset' }});
+            _.player = this.entityManager.createEntity('player', null,
+                {
+                    model: {
+                        type: 'asset',
+                        castShadows: true,
+                        isStatic: false,
+                        receiveShadows: false
+                    },
+                    animation: {
+                        loop: true,
+                        activate: true
+                    }
+                });
 
             _.floor = this.entityManager.createEntity('ground', 'plane', {
                 model: { type: 'plane' },
@@ -78,7 +91,12 @@
                     halfExtents: new pc.Vec3(this.map.size.x / 2, this.map.size.z / 2, this.map.size.y / 2)
                 }
             });
-            _.camera = this.entityManager.createEntity('debugcamera', 'camera', {}, { camera: { attributes: {} }});
+
+            _.camera = this.entityManager.createEntity('debugcamera', 'camera', {},
+                {
+                    camera: { attributes: {} }
+                });
+
             _.light = this.entityManager.createEntity('light', 'light', { light: null });
 
             // apply object properties
@@ -87,35 +105,49 @@
             _.floor.setEulerAngles(0, 0, 0)
             _.floor.setLocalScale(this.map.size.x, this.map.size.z, this.map.size.y)
             _.light.setEulerAngles(45, 0, 0);
-            _.player.setPosition(0, 0, 0)
 
 
             // load player object/textures
-            var textures = [
-                'public/models/player/player.json',
-                'public/models/player/mat/mat1.json'
-            ]
 
             this.renderer.assets.loadFromUrl('public/models/player/player.json', 'model', function (error, asset) {
                 if (error) {
                     alert("Failed to load " + t);
                     return;
                 }
-                this.renderer.assets.add(asset);
-                this.renderer.assets.load(asset);
+
 
                 _.player.model.asset = asset;
                 _.player.setLocalScale(3, 3, 3);
+                
+                // Load animations
+
+                var animations = {
+                    idle: 'public/animations/idle/idle.json',
+                    jog: 'public/animations/jog/jog.json',
+                    running: 'public/animations/running/running.json'
+                }
 
 
+                for (let i in animations) {
+                    this.renderer.assets.loadFromUrl(animations[i], 'animation', function (err, asset) {
+                        if (err) throw new Error("Failed to load animation file " + animations[i] + ". " + err);
+                        asset.resource.name = i;
+                        asset.name = i;
+                        _.player.animation.animations[i] = asset.resource; // get component
+                        // since the first animation was idle, lets play it .
+                        _.player.animation.play('idle', 0.5); // Trying to play animation 'idle' which doesn't exist....
+                    })
+                }
 
             }.bind(this))
+
+            window.player = _.player; // debug
 
 
 
             // setup a skybox environment
 
-            textures = [
+            var textures = [
                     'public/cubemaps/yokohama/posx.jpg',
                     'public/cubemaps/yokohama/negx.jpg',
                     'public/cubemaps/yokohama/posy.jpg',
@@ -125,7 +157,7 @@
             ]
 
 
-            var textures = textures.map(t => {
+            textures = textures.map(t => {
                 var asset = new pc.Asset(t, 'texture',
                   { url: t },
                   { addressu: 'repeat', addressv: 'repeat' }
@@ -137,7 +169,9 @@
             });
 
 
-            var cubemap = new pc.Asset('skybox', 'cubemap',
+
+
+            this.renderer.setSkybox(new pc.Asset('skybox', 'cubemap',
                 null,
                 {
                     anisotropy: 1,
@@ -146,10 +180,7 @@
                     rgbm: false,
                     textures: textures
                 }
-            );
-
-
-            this.renderer.setSkybox(cubemap)
+            ))
 
             // add all objects to scene and return objects
             for (var i in _) {

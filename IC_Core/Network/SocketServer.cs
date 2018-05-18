@@ -48,6 +48,7 @@ namespace IC_Core.Network
                 Console.WriteLine("[ERROR] " + ex.Message);
             }
 
+            WSS.Log.Level = LogLevel.Error;
 
             /* Future use of SSL
              * 
@@ -75,6 +76,11 @@ namespace IC_Core.Network
 
                 Console.WriteLine("[INFO] Socket Server Started");
             }
+        }
+
+        public int SessionCount(string a)
+        {
+            return WSS.WebSocketServices[a].Sessions.Count;
         }
 
         public void AddWebSocketService<TBehavior>(string path, Func<TBehavior> initializer)  where TBehavior : WebSocketBehavior
