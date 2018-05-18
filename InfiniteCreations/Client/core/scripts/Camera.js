@@ -54,12 +54,10 @@ Camera.prototype.update = function () {
 
     if (this.app.keyboard.isPressed(pc.KEY_W)) {
         this.entity.translateLocal(0, 0, -this.cameraSpeed)
-        console.log(this.entity.position.x, this.entity.position.y, this.entity.position.z)
     }
 
     if (this.app.keyboard.isPressed(pc.KEY_S)) {
         this.entity.translateLocal(0, 0, this.cameraSpeed);
-        console.log(this.entity.position.x, this.entity.position.y, this.entity.position.z)
     }
 
     if (this.app.keyboard.isPressed(pc.KEY_A)) {

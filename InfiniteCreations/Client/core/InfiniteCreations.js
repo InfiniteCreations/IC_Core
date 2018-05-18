@@ -80,7 +80,8 @@
                     },
                     animation: {
                         loop: true,
-                        activate: true
+                        activate: true,
+                        enabled: false
                     }
                 });
 
@@ -121,29 +122,29 @@
                 
                 // Load animations
 
-                var animations = {
-                    idle: 'public/animations/idle/idle.json',
-                    jog: 'public/animations/jog/jog.json',
-                    running: 'public/animations/running/running.json'
-                }
+                var animations = [
+                    'idle:public/animations/idle/idle.json',
+                    'jog:public/animations/jog/jog.json',
+                    'running:public/animations/running/running.json'
+                ]
 
-
-                for (let i in animations) {
-                    this.renderer.assets.loadFromUrl(animations[i], 'animation', function (err, asset) {
-                        if (err) throw new Error("Failed to load animation file " + animations[i] + ". " + err);
-                        asset.resource.name = i;
-                        asset.name = i;
-                        _.player.animation.animations[i] = asset.resource; // get component
-                        // since the first animation was idle, lets play it .
-                        _.player.animation.play('idle', 0.5); // Trying to play animation 'idle' which doesn't exist....
+                animations.map(t => {
+                    let s = t.split(':');
+                    let asset = new pc.Asset(s[0], 'animation', { url: s[1] });
+                    this.renderer.assets.load(asset);
+                    _.player.animation.animations[s[0]] = undefined;
+                    asset.on('load', function () {
+                        _.player.animation.animations[s[0]] = asset.resource;
+                        _.player.animation.enabled = false;
+                        _.player.animation.enabled = true;
                     })
-                }
+                });
+
+                _.player.animation.play('idle');
 
             }.bind(this))
 
-            window.player = _.player; // debug
-
-
+            window.player = _.player;
 
             // setup a skybox environment
 
@@ -193,6 +194,7 @@
         run() {
             this.resize();
             this.renderer.start();
+            this.objects.player.animation.enabled = true;
         }
 
         registerListeners() {
